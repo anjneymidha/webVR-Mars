@@ -89,45 +89,46 @@ var controls = new THREE.VRControls(camera);
 var effect = new THREE.VREffect(renderer);
 effect.setSize(window.innerWidth, window.innerHeight);
 
+//create a sphere - we'll use the inner surface to project our Mars image on to it
+var geometry  = new THREE.SphereGeometry(50, 200, 200)
 
-// Add a repeating grid as a skybox.
-var boxWidth = 5;
-var texture = THREE.ImageUtils.loadTexture(
-  'img/box.png'
-);
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-texture.repeat.set(boxWidth, boxWidth);
+// create the material, using a texture of mars
+var material  = new THREE.MeshBasicMaterial();
+material.map   = THREE.ImageUtils.loadTexture('img/landsend.jpg');
+material.side  = THREE.BackSide;
 
-var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
-var material = new THREE.MeshBasicMaterial({
-  map: texture,
-  color: 0x01BE00,
-  side: THREE.BackSide
-});
-
+// create the mesh based on geometry and material
+var mesh  = new THREE.Mesh(geometry, material);
 var skybox = new THREE.Mesh(geometry, material);
-scene.add(skybox);
+scene.add(skybox);  
 
 
 // Create a VR manager helper to enter and exit VR mode.
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 // Create 3D objects.
-var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-var material = new THREE.MeshNormalMaterial();
-var cube = new THREE.Mesh(geometry, material);
+var geometry = new THREE.SphereGeometry(0.5, 32, 32);
+var material = new THREE.MeshBasicMaterial();
+var earthMesh = new THREE.Mesh(geometry, material);
 
-// Position cube mesh
-cube.position.z = -1;
+// Position earth mesh
+earthMesh.position.z = 1;
+earthMesh.position.x = 15;
+earthMesh.position.y = 7.25;
 
 
-// Add cube mesh to your three.js scene
-scene.add(cube);
+// Add earth mesh to your three.js scene
+scene.add(earthMesh);
+
+material.map = THREE.ImageUtils.loadTexture('img/earthmap1k.jpg')
+
+
+// Add earthMesh mesh to your three.js scene
+scene.add(earthMesh);
 // Request animation frame loop function
 function animate(timestamp) {
-  // Apply rotation to cube mesh
-  cube.rotation.y += 0.01;
+  // Apply rotation to earthMesh mesh
+  earthMesh.rotation.y += 0.01;
 
   // Update VR headset position and apply to camera.
   controls.update();
